@@ -1,0 +1,76 @@
+{
+  "name": "@jpmoorhouse/paint-calculators",
+  "version": "1.0.2",
+  "description": "Professional painting calculation tools and APIs",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.esm.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./coverage": "./dist/coverage.js",
+    "./environmental": "./dist/environmental.js",
+    "./cost": "./dist/cost.js",
+    "./technical": "./dist/technical.js"
+  },
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "docs": "typedoc",
+    "prepublishOnly": "npm run build && npm test",
+    "widget:build": "webpack --config webpack.widget.config.js",
+    "widget:dev": "webpack serve --config webpack.widget.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moorhouse-coating/paint-calculators"
+  },
+  "keywords": [
+    "paint",
+    "calculator",
+    "coating",
+    "coverage",
+    "commercial painting",
+    "dew point",
+    "VOC",
+    "estimation",
+    "DFT",
+    "WFT",
+    "surface area"
+  ],
+  "author": "Moorhouse Coating",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.2.0",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "rollup": "^4.0.0",
+    "ts-jest": "^29.1.0",
+    "tslib": "^2.6.0",
+    "typedoc": "^0.25.0",
+    "typescript": "^5.2.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "moorhouse-coating-paint-calculators": "^1.0.0"
+  }
+}

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moorhouse Paint Calculator - Web Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .calculator-card h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #764ba2;
+        }
+
+        .results h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .alert {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Moorhouse Paint Calculator</h1>
+            <p>Professional Painting Calculations Made Easy</p>
+        </header>
+
+        <div class="calculator-grid">
+            <!-- Coverage Calculator -->
+            <div class="calculator-card">
+                <h2>Paint Coverage Calculator</h2>
+                <form id="coverageForm">
+                    <div class="form-group">
+                        <label for="surfaceArea">Surface Area (sq ft)</label>
+                        <input type="number" id="surfaceArea" value="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="coats">Number of Coats</label>
+                        <input type="number" id="coats" value="2" min="1" max="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="volumeSolids">Volume Solids (%)</label>
+                        <input type="number" id="volumeSolids" value="65" min="1" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetDFT">Target DFT (mils/coat)</label>
+                        <input type="number" id="targetDFT" value="5" step="0.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transferEfficiency">Transfer Efficiency (%)</label>
+                        <select id="transferEfficiency">
+                            <option value="65">Airless Spray (65%)</option>
+                            <option value="35">Air Spray (35%)</option>
+                            <option value="70">HVLP (70%)</option>
+                            <option value="85">Brush/Roll (85%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pricePerGallon">Price per Gallon ($)</label>
+                        <input type="number" id="pricePerGallon" value="45" step="0.01">
+                    </div>
+                    <button type="submit">Calculate Coverage</button>
+                </form>
+                <div id="coverageResults"></div>
+            </div>
+
+            <!-- Dew Point Calculator -->
+            <div class="calculator-card">
+                <h2>Dew Point Calculator</h2>
+                <form id="dewPointForm">
+                    <div class="form-group">
+                        <label for="temperature">Temperature (°F)</label>
+                        <input type="number" id="temperature" value="75" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="humidity">Relative Humidity (%)</label>
+                        <input type="number" id="humidity" value="65" min="0" max="100" required>
+                    </div>
+                    <button type="submit">Check Conditions</button>
+                </form>
+                <div id="dewPointResults"></div>
+            </div>
+
+            <!-- WFT Calculator -->
+            <div class="calculator-card">
+                <h2>Wet Film Thickness Calculator</h2>
+                <form id="wftForm">
+                    <div class="form-group">
+                        <label for="dft">Target DFT (mils)</label>
+                        <input type="number" id="dft" value="5" step="0.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="solids">Volume Solids (%)</label>
+                        <input type="number" id="solids" value="65" min="1" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reduction">Thinning (%)</label>
+                        <input type="number" id="reduction" value="0" min="0" max="50">
+                    </div>
+                    <button type="submit">Calculate WFT</button>
+                </form>
+                <div id="wftResults"></div>
+            </div>
+
+            <!-- Surface Area Calculator -->
+            <div class="calculator-card">
+                <h2>Surface Area Calculator</h2>
+                <form id="areaForm">
+                    <div class="form-group">
+                        <label for="shape">Shape</label>
+                        <select id="shape">
+                            <option value="rectangular">Rectangular/Walls</option>
+                            <option value="cylindrical">Cylindrical Tank</option>
+                            <option value="spherical">Spherical Tank</option>
+                        </select>
+                    </div>
+                    <div id="rectangularInputs">
+                        <div class="form-group">
+                            <label for="length">Length (ft)</label>
+                            <input type="number" id="length" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="width">Width (ft)</label>
+                            <input type="number" id="width" value="30">
+                        </div>
+                        <div class="form-group">
+                            <label for="height">Height (ft)</label>
+                            <input type="number" id="height" value="20">
+                        </div>
+                    </div>
+                    <div id="cylindricalInputs" style="display:none;">
+                        <div class="form-group">
+                            <label for="radius">Radius (ft)</label>
+                            <input type="number" id="radius" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="cylHeight">Height (ft)</label>
+                            <input type="number" id="cylHeight" value="30">
+                        </div>
+                    </div>
+                    <button type="submit">Calculate Area</button>
+                </form>
+                <div id="areaResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // This would normally import from the NPM package
+        // For demo purposes, we'll simulate the calculator functions
+
+        const calculators = {
+            calculatePaintCoverage: (input) => {
+                const theoreticalCoverage = (1604 * input.volumeSolids / 100) / input.targetDFT;
+                const practicalCoverage = theoreticalCoverage * (input.transferEfficiency / 100);
+                const gallonsPerCoat = input.surfaceArea / practicalCoverage;
+                const totalGallons = gallonsPerCoat * input.coats;
+                const totalWithWaste = totalGallons * 1.1;
+                const estimatedCost = totalWithWaste * (input.pricePerGallon || 0);
+
+                return {
+                    theoreticalCoverage: Math.round(theoreticalCoverage * 10) / 10,
+                    practicalCoverage: Math.round(practicalCoverage * 10) / 10,
+                    totalGallons: Math.round(totalGallons * 10) / 10,
+                    totalWithWaste: Math.round(totalWithWaste * 10) / 10,
+                    fiveGallonBuckets: Math.ceil(totalWithWaste / 5),
+                    estimatedCost: Math.round(estimatedCost * 100) / 100
+                };
+            },
+
+            calculateDewPoint: (input) => {
+                const a = 17.27;
+                const b = 237.7;
+                const alpha = ((a * input.temperature) / (b + input.temperature)) + Math.log(input.humidity / 100);
+                const dewPoint = (b * alpha) / (a - alpha);
+                const surfaceTemp = input.temperature - 5;
+                const currentMargin = surfaceTemp - dewPoint;
+                const isSafe = currentMargin >= 5;
+
+                return {
+                    dewPoint: Math.round(dewPoint * 10) / 10,
+                    minimumSurfaceTemp: Math.round((dewPoint + 5) * 10) / 10,
+                    currentMargin: Math.round(currentMargin * 10) / 10,
+                    isSafe,
+                    recommendation: isSafe
+                        ? "✅ Conditions are acceptable for painting"
+                        : `⚠️ Risk of condensation. Wait until surface temp is above ${Math.round(dewPoint + 5)}°F`
+                };
+            },
+
+            calculateWFT: (input) => {
+                const adjustedSolids = input.volumeSolids * (1 - input.reductionPercent / 100);
+                const wetFilmThickness = (input.targetDFT / adjustedSolids) * 100;
+
+                return {
+                    wetFilmThickness: Math.round(wetFilmThickness * 10) / 10,
+                    adjustedSolids: Math.round(adjustedSolids * 10) / 10,
+                    wetFilmGauge: wetFilmThickness <= 25 ? '0-25 mil gauge' : '0-50 mil gauge'
+                };
+            },
+
+            calculateSurfaceArea: (input) => {
+                let grossArea = 0;
+
+                if (input.shape === 'rectangular') {
+                    const perimeter = 2 * (input.dimensions.length + input.dimensions.width);
+                    grossArea = perimeter * input.dimensions.height;
+                } else if (input.shape === 'cylindrical') {
+                    grossArea = 2 * Math.PI * input.dimensions.radius * input.dimensions.height;
+                } else if (input.shape === 'spherical') {
+                    grossArea = 4 * Math.PI * Math.pow(input.dimensions.radius, 2);
+                }
+
+                return {
+                    grossArea: Math.round(grossArea * 10) / 10,
+                    netArea: Math.round(grossArea * 10) / 10,
+                    measurement: {
+                        squareFeet: Math.round(grossArea * 10) / 10,
+                        squareMeters: Math.round(grossArea * 0.092903 * 100) / 100
+                    }
+                };
+            }
+        };
+
+        // Coverage Calculator
+        document.getElementById('coverageForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const result = calculators.calculatePaintCoverage({
+                surfaceArea: parseFloat(document.getElementById('surfaceArea').value),
+                coats: parseInt(document.getElementById('coats').value),
+                volumeSolids: parseFloat(document.getElementById('volumeSolids').value),
+                targetDFT: parseFloat(document.getElementById('targetDFT').value),
+                transferEfficiency: parseFloat(document.getElementById('transferEfficiency').value),
+                pricePerGallon: parseFloat(document.getElementById('pricePerGallon').value)
+            });
+
+            document.getElementById('coverageResults').innerHTML = `
+                <div class="results">
+                    <h3>Results</h3>
+                    <div class="result-item">
+                        <span class="result-label">Theoretical Coverage:</span>
+                        <span class="result-value">${result.theoreticalCoverage} sq ft/gal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Practical Coverage:</span>
+                        <span class="result-value">${result.practicalCoverage} sq ft/gal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total Gallons:</span>
+                        <span class="result-value">${result.totalGallons} gal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">With 10% Waste:</span>
+                        <span class="result-value">${result.totalWithWaste} gal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">5-Gallon Buckets:</span>
+                        <span class="result-value">${result.fiveGallonBuckets}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Estimated Cost:</span>
+                        <span class="result-value">$${result.estimatedCost.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Dew Point Calculator
+        document.getElementById('dewPointForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const result = calculators.calculateDewPoint({
+                temperature: parseFloat(document.getElementById('temperature').value),
+                humidity: parseFloat(document.getElementById('humidity').value)
+            });
+
+            const alertClass = result.isSafe ? 'alert-success' : 'alert-warning';
+
+            document.getElementById('dewPointResults').innerHTML = `
+                <div class="results">
+                    <h3>Conditions</h3>
+                    <div class="result-item">
+                        <span class="result-label">Dew Point:</span>
+                        <span class="result-value">${result.dewPoint}°F</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Min Surface Temp:</span>
+                        <span class="result-value">${result.minimumSurfaceTemp}°F</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Safety Margin:</span>
+                        <span class="result-value">${result.currentMargin}°F</span>
+                    </div>
+                </div>
+                <div class="alert ${alertClass}">
+                    ${result.recommendation}
+                </div>
+            `;
+        });
+
+        // WFT Calculator
+        document.getElementById('wftForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const result = calculators.calculateWFT({
+                targetDFT: parseFloat(document.getElementById('dft').value),
+                volumeSolids: parseFloat(document.getElementById('solids').value),
+                reductionPercent: parseFloat(document.getElementById('reduction').value)
+            });
+
+            document.getElementById('wftResults').innerHTML = `
+                <div class="results">
+                    <h3>Results</h3>
+                    <div class="result-item">
+                        <span class="result-label">Wet Film Thickness:</span>
+                        <span class="result-value">${result.wetFilmThickness} mils</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Adjusted Solids:</span>
+                        <span class="result-value">${result.adjustedSolids}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Recommended Gauge:</span>
+                        <span class="result-value">${result.wetFilmGauge}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Surface Area Calculator
+        document.getElementById('shape').addEventListener('change', (e) => {
+            const shape = e.target.value;
+            document.getElementById('rectangularInputs').style.display =
+                shape === 'rectangular' ? 'block' : 'none';
+            document.getElementById('cylindricalInputs').style.display =
+                shape === 'cylindrical' || shape === 'spherical' ? 'block' : 'none';
+        });
+
+        document.getElementById('areaForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const shape = document.getElementById('shape').value;
+            let dimensions = {};
+
+            if (shape === 'rectangular') {
+                dimensions = {
+                    length: parseFloat(document.getElementById('length').value),
+                    width: parseFloat(document.getElementById('width').value),
+                    height: parseFloat(document.getElementById('height').value)
+                };
+            } else {
+                dimensions = {
+                    radius: parseFloat(document.getElementById('radius').value),
+                    height: parseFloat(document.getElementById('cylHeight').value)
+                };
+            }
+
+            const result = calculators.calculateSurfaceArea({
+                shape,
+                dimensions
+            });
+
+            document.getElementById('areaResults').innerHTML = `
+                <div class="results">
+                    <h3>Surface Area</h3>
+                    <div class="result-item">
+                        <span class="result-label">Square Feet:</span>
+                        <span class="result-value">${result.measurement.squareFeet} sq ft</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Square Meters:</span>
+                        <span class="result-value">${result.measurement.squareMeters} m²</span>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
